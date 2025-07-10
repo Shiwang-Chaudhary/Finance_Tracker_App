@@ -8,9 +8,17 @@ import 'package:finance_tracker_frontend/widgets/transactionTile.dart';
 import 'package:flutter/material.dart';
 
 
-class Transactions extends StatelessWidget {
+class Transactions extends StatefulWidget {
   const Transactions({super.key});
 
+  @override
+  State<Transactions> createState() => _TransactionsState();
+}
+
+class _TransactionsState extends State<Transactions> {
+  Future <void> transactionHistory() async {
+   
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +41,7 @@ class Transactions extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 30,),
-                Column(
+                const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(text: "Good morning 👋", fontWeight: FontWeight.w400, size: 20),
@@ -41,21 +49,10 @@ class Transactions extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 220),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomText(
-                        text: "Transaction history :",
-                        fontWeight: FontWeight.w500,
-                        size: 20),
-                    CustomText(
-                      text: "See all",
-                      fontWeight: FontWeight.w400,
-                      size: 17,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
+                const CustomText(
+                    text: "Transaction history :",
+                    fontWeight: FontWeight.w500,
+                    size: 20),
                 // ✅ Wrap ListView.builder in Expanded
                 Expanded(
                   child: ListView.builder(

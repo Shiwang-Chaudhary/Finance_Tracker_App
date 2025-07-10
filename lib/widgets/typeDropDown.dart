@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class TypeDropDown extends StatefulWidget {
   final bool monthEnable;
   final String text;
-  const TypeDropDown({super.key,required this.monthEnable, required this.text});
+  final onChanged;
+  const TypeDropDown({super.key,required this.monthEnable, required this.text,required this.onChanged});
 
   @override
   State<TypeDropDown> createState() => _TypeDropDownState();
 }
 
 class _TypeDropDownState extends State<TypeDropDown> {
-  final List<String> categories = ['Income', 'Expense'];
+  final List<String> categories = ['income', 'expense'];
   final List<String> months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -35,6 +36,7 @@ class _TypeDropDownState extends State<TypeDropDown> {
           onChanged: (value) {
             setState(() {
               selectedCategory = value;
+              widget.onChanged.call(value);
             });
           },
           items: widget.monthEnable ? months.map((String category) {

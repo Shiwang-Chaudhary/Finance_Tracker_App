@@ -150,7 +150,7 @@ class BudgetDetails extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 20),
-                    const TypeDropDown(monthEnable: true, text: "Select Month"),
+                    TypeDropDown(monthEnable: true, text: "Select Month",onChanged: (){},),
                     const SizedBox(height: 20),
                     // 🔸 Budget + Edit
                     Row(

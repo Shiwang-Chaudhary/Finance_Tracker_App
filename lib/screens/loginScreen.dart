@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String tokens = "";
   Map resData = {};
   Future<void> login() async {
-    final String uri = "http://192.168.1.5:4000/api/users/login";
+    const String uri = "http://192.168.1.5:4000/api/users/login";
     final url = Uri.parse(uri);
     if (emailController.text.isEmpty || passController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

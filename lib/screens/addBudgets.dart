@@ -14,6 +14,7 @@ class AddBudget extends StatefulWidget {
 class _AddBudgetState extends State<AddBudget> {
  // TextEditingController categoryController = TextEditingController();
   TextEditingController amountCont = TextEditingController();
+  TextEditingController noteController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +89,7 @@ class _AddBudgetState extends State<AddBudget> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 10),
-                  TypeDropDown(monthEnable: true, text: "Select Month"),
+                  TypeDropDown(monthEnable: true, text: "Select Month",onChanged: (){},),
                   SizedBox(height: 20,),
                     const CustomText(
                     text: "NOTE (optinal)",
@@ -97,7 +98,7 @@ class _AddBudgetState extends State<AddBudget> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 15),
-               CustomTextField(maxlines: 5,controller: amountCont, hintText: "Description",showSymbol: false,numberType: true,),
+               CustomTextField(maxlines: 5,controller: noteController, hintText: "Description",showSymbol: false,numberType: true,),
                   const SizedBox(height: 17),
                 ],
               ),
