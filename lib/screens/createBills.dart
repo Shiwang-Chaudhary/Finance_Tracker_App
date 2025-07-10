@@ -1,21 +1,21 @@
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
-import 'package:finance_tracker_frontend/widgets/transactionTile.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
-import 'package:finance_tracker_frontend/widgets/typeDropDown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key});
+class CreateBills extends StatefulWidget {
+
+  const CreateBills({super.key});
 
   @override
-  State<AddTransaction> createState() => _AddTransactionState();
+  State<CreateBills> createState() => _CreateBillsState();
 }
 
-class _AddTransactionState extends State<AddTransaction> {
-   TextEditingController categoryController = TextEditingController();
-   TextEditingController amountController = TextEditingController();
+class _CreateBillsState extends State<CreateBills> {
+  final TextEditingController categoryController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +24,7 @@ class _AddTransactionState extends State<AddTransaction> {
         backgroundColor: Colors.transparent, // 🔹 Makes AppBar see-through
         elevation: 0, // 🔹 Removes shadow
         title: const Text(
-          'Add transaction',
+          'Create Bills',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w600, fontSize: 26),
         ),
@@ -63,13 +63,14 @@ class _AddTransactionState extends State<AddTransaction> {
               child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 10,),
                   const CustomText(
                     text: "CATEGORY NAME (Ex. Netflix)",
                     fontWeight: FontWeight.w500,
                     size: 17,
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 10),
                  CustomTextField(controller: categoryController, hintText: "Category",showSymbol: false,numberType: false,),
                   const SizedBox(height: 17),
                   const CustomText(
@@ -78,18 +79,20 @@ class _AddTransactionState extends State<AddTransaction> {
                     size: 17,
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
-                  const SizedBox(height: 5),
-                 CustomTextField(controller: amountController, hintText: "Amount",showSymbol: true,numberType: true,),
-                  const SizedBox(height: 17),
-                    const CustomText(
-                    text: "TYPE",
-                    fontWeight: FontWeight.w500,
-                    size: 17,
-                    color: Color.fromARGB(255, 106, 106, 106),
-                  ),
                   const SizedBox(height: 10),
-                  TypeDropDown(monthEnable: false,text: "Select Transaction Type",),
-                  SizedBox(height: 20,),
+                 CustomTextField(controller: amountController, hintText: "Amount",showSymbol: true,numberType: true,),
+                   const SizedBox(height: 17),
+                     const CustomText(
+                     text: "Date of Payment",
+                     fontWeight: FontWeight.w500,
+                     size: 17,
+                     color: Color.fromARGB(255, 106, 106, 106),
+                   ),
+                  SizedBox(height: 10,),
+                 CustomTextField(controller: dateController, hintText: "DD/MM/YYYY",showSymbol: false,numberType: false,),
+                 // const SizedBox(height: 10),
+                  //TypeDropDown(monthEnable: false,text: "Select Transaction Type",),
+                  SizedBox(height: 30,),
                 
 
                 ],
@@ -97,10 +100,10 @@ class _AddTransactionState extends State<AddTransaction> {
             ),
           ),
             Positioned(
-               top: 540, // 🔹 Control how far from top it should float
+               top: 520, // 🔹 Control how far from top it should float
             left: 40,
             right: 40,
-              child: CustomButton(buttonName: "Submit", color: Colors.blue, width: 80, height: 55, onTap: (){}))
+              child: CustomButton(buttonName: "Save", color: Colors.blue, width: 80, height: 55, onTap: (){}))
 
           
         ],

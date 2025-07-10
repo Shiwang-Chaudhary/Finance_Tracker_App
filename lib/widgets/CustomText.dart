@@ -16,6 +16,8 @@ class CustomText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
       text,
       style: TextStyle(fontSize: size, fontWeight: fontWeight, color: color??Colors.black),
     );

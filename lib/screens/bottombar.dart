@@ -1,3 +1,5 @@
+import 'package:finance_tracker_frontend/screens/addBudgets.dart';
+import 'package:finance_tracker_frontend/screens/budgetDetails.dart';
 import 'package:finance_tracker_frontend/screens/transaction.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,7 @@ class _BottomBarState extends State<BottomBar> {
   int selectedIndex = 0;
   List screens = [
     const Transactions(),
-    // const CartScreen(),
+     const BudgetDetails(),
     // const ProfileScreen(),
   ];
   void onItemTapped(int index) {
@@ -39,8 +41,8 @@ class _BottomBarState extends State<BottomBar> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Budget',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

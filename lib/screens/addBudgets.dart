@@ -1,21 +1,19 @@
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
-import 'package:finance_tracker_frontend/widgets/transactionTile.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
 import 'package:finance_tracker_frontend/widgets/typeDropDown.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key});
+class AddBudget extends StatefulWidget {
+  const AddBudget({super.key});
 
   @override
-  State<AddTransaction> createState() => _AddTransactionState();
+  State<AddBudget> createState() => _AddBudgetState();
 }
-
-class _AddTransactionState extends State<AddTransaction> {
-   TextEditingController categoryController = TextEditingController();
-   TextEditingController amountController = TextEditingController();
+class _AddBudgetState extends State<AddBudget> {
+ // TextEditingController categoryController = TextEditingController();
+  TextEditingController amountCont = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +22,13 @@ class _AddTransactionState extends State<AddTransaction> {
         backgroundColor: Colors.transparent, // 🔹 Makes AppBar see-through
         elevation: 0, // 🔹 Removes shadow
         title: const Text(
-          'Add transaction',
+          'Add Budget',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w600, fontSize: 26),
         ),
         centerTitle: true,
       ),
-      body: Stack(
+      body:Stack(
         children: [
           // Background Image
           Container(
@@ -63,14 +61,16 @@ class _AddTransactionState extends State<AddTransaction> {
               child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                   const SizedBox(height: 17),
                   const CustomText(
-                    text: "CATEGORY NAME (Ex. Netflix)",
+                    text: "NAME OF BUDGET (Ex. January's Budget)",
                     fontWeight: FontWeight.w500,
                     size: 17,
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 5),
-                 CustomTextField(controller: categoryController, hintText: "Category",showSymbol: false,numberType: false,),
+               CustomTextField(controller: amountCont, hintText: "Budget's name",showSymbol: false,numberType: false,),
+                         
                   const SizedBox(height: 17),
                   const CustomText(
                     text: "AMOUNT",
@@ -79,32 +79,40 @@ class _AddTransactionState extends State<AddTransaction> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 5),
-                 CustomTextField(controller: amountController, hintText: "Amount",showSymbol: true,numberType: true,),
+               CustomTextField(controller: amountCont, hintText: "Amount",showSymbol: true,numberType: true,),
                   const SizedBox(height: 17),
                     const CustomText(
-                    text: "TYPE",
+                    text: "MONTH",
                     fontWeight: FontWeight.w500,
                     size: 17,
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 10),
-                  TypeDropDown(monthEnable: false,text: "Select Transaction Type",),
+                  TypeDropDown(monthEnable: true, text: "Select Month"),
                   SizedBox(height: 20,),
-                
-
+                    const CustomText(
+                    text: "NOTE (optinal)",
+                    fontWeight: FontWeight.w500,
+                    size: 17,
+                    color: Color.fromARGB(255, 106, 106, 106),
+                  ),
+                  const SizedBox(height: 15),
+               CustomTextField(maxlines: 5,controller: amountCont, hintText: "Description",showSymbol: false,numberType: true,),
+                  const SizedBox(height: 17),
                 ],
               ),
             ),
           ),
             Positioned(
-               top: 540, // 🔹 Control how far from top it should float
+               top: 750, // 🔹 Control how far from top it should float
             left: 40,
             right: 40,
               child: CustomButton(buttonName: "Submit", color: Colors.blue, width: 80, height: 55, onTap: (){}))
 
-          
+          // Foreground Content
         ],
       ),
+   
     );
   }
 }

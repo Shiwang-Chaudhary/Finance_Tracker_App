@@ -5,18 +5,20 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final bool showSymbol;
   final bool numberType;
-
+  final int? maxlines;
   const CustomTextField({
     Key? key,
     required this.controller,
     required this.hintText,
     this.showSymbol = false,
     this.numberType = false,
+    this.maxlines,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      maxLines: maxlines ?? 1,
       controller: controller,
       keyboardType: numberType
           ? const TextInputType.numberWithOptions(decimal: true)

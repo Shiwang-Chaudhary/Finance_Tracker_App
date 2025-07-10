@@ -6,6 +6,7 @@ class CustomButton extends StatelessWidget {
   final double width;
   final double height;
   final VoidCallback onTap;
+  final double? fontsize;
 
   const CustomButton({
     Key? key,
@@ -14,6 +15,7 @@ class CustomButton extends StatelessWidget {
     required this.width,
     required this.height,
     required this.onTap,
+    this.fontsize
   }) : super(key: key);
 
   @override
@@ -35,9 +37,9 @@ class CustomButton extends StatelessWidget {
           ),
           child: Text(
             buttonName,
-            style: const TextStyle(
+            style:  TextStyle(
               color: Colors.white,
-              fontSize: 19,
+              fontSize: fontsize ?? 19,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),

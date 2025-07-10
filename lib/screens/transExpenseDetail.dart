@@ -1,4 +1,5 @@
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
+import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 
 class TransExpanseDetail extends StatelessWidget {
@@ -48,7 +49,7 @@ class TransExpanseDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Padding(
+              child:  Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,6 +95,8 @@ class TransExpanseDetail extends StatelessWidget {
 
                     ],),
                     SizedBox(height: 40,),
+                    Center(child: CustomButton(buttonName: "Edit", color: Colors.blue, width: 80, height: 55, onTap: (){})),
+
 
                   ],
                 ),

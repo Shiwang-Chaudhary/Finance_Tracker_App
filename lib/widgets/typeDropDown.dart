@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TypeDropDown extends StatefulWidget {
-  const TypeDropDown({super.key});
+  final bool monthEnable;
+  final String text;
+  const TypeDropDown({super.key,required this.monthEnable, required this.text});
 
   @override
   State<TypeDropDown> createState() => _TypeDropDownState();
@@ -9,6 +11,10 @@ class TypeDropDown extends StatefulWidget {
 
 class _TypeDropDownState extends State<TypeDropDown> {
   final List<String> categories = ['Income', 'Expense'];
+  final List<String> months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
   String? selectedCategory;
 
   @override
@@ -23,7 +29,7 @@ class _TypeDropDownState extends State<TypeDropDown> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: selectedCategory,
-          hint: const Text("Select Transaction Type"),
+          hint:  Text(widget.text),
           icon: const Icon(Icons.keyboard_arrow_down),
           isExpanded: true,
           onChanged: (value) {
@@ -31,7 +37,12 @@ class _TypeDropDownState extends State<TypeDropDown> {
               selectedCategory = value;
             });
           },
-          items: categories.map((String category) {
+          items: widget.monthEnable ? months.map((String category) {
+            return DropdownMenuItem<String>(
+              value: category,
+              child: Text(category),
+            );
+          }).toList() : categories.map((String category) {
             return DropdownMenuItem<String>(
               value: category,
               child: Text(category),

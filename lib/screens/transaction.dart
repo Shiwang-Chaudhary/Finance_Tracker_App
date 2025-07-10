@@ -1,7 +1,10 @@
+import 'package:finance_tracker_frontend/screens/addBudgets.dart';
 import 'package:finance_tracker_frontend/screens/addTransaction.dart';
 import 'package:finance_tracker_frontend/screens/transIncomeDetail.dart';
+import 'package:finance_tracker_frontend/screens/wallet.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
-import 'package:finance_tracker_frontend/widgets/customListTile.dart';
+import 'package:finance_tracker_frontend/widgets/customButton.dart';
+import 'package:finance_tracker_frontend/widgets/transactionTile.dart';
 import 'package:flutter/material.dart';
 
 
@@ -92,12 +95,27 @@ class Transactions extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Column(
+            child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(text: "Total balance", fontWeight: FontWeight.w500, size: 20,color: Colors.white,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomText(text: "Total balance", fontWeight: FontWeight.w500, size: 20,color: Colors.white,),
+                    CustomButton(fontsize: 14,buttonName: "+ Budget", color: Colors.blue, width: 75, height: 40, onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBudget()));
+                    },),
+                    CustomButton(fontsize: 14,buttonName: "+ Wallet", color: Colors.blue, width: 70, height: 40, onTap: (){Navigator.push(context, MaterialPageRoute(builder: (_)=>Wallet()));},),
+
+                  ],
+                ),
                 SizedBox(height: 5),
-                CustomText(text: "₹ 12,500.00", fontWeight: FontWeight.bold, size: 30,color: Colors.white,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(text: "₹ 12,500.00", fontWeight: FontWeight.bold, size: 30,color: Colors.white,),
+                    
+                  ],
+                ),
+                SizedBox(height: 10),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                   CustomText(text: "Income", fontWeight: FontWeight.w500, size: 20,color: Color.fromARGB(255, 216, 251, 255),),

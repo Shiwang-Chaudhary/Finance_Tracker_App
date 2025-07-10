@@ -1,4 +1,5 @@
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
+import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 
 class TransIncomeDetail extends StatelessWidget {
@@ -48,7 +49,7 @@ class TransIncomeDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Padding(
+              child:  Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +76,7 @@ class TransIncomeDetail extends StatelessWidget {
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                       CustomText(text: "Date", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "20th dec, 2025", fontWeight: FontWeight.w500, size: 17,color: Colors.green,),
+                      CustomText(text: "20th dec, 2025", fontWeight: FontWeight.w500, size: 17,color: Colors.black,),
 
                     ],),
                     SizedBox(height: 10,),
@@ -93,13 +94,17 @@ class TransIncomeDetail extends StatelessWidget {
                       CustomText(text: "Rs. 850", fontWeight: FontWeight.w500, size: 17,color: Colors.green,),
 
                     ],),
+                    
                     SizedBox(height: 20,),
+                    Center(child: CustomButton(buttonName: "Edit", color: Colors.blue, width: 80, height: 55, onTap: (){})),
+
 
                   ],
                 ),
               ),
             ),
           ),
+          
         ],
       ),
     );
