@@ -21,7 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Map resData = {};
 
   Future<void> createAccount() async {
-    const String uri = "http://192.168.1.5:4000/api/users/register";
+    const String uri = "http://192.168.1.4:4000/api/users/register";
     final url = Uri.parse(uri);
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||

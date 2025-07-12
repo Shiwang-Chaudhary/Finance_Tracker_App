@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:finance_tracker_frontend/screens/addTransaction.dart';
+import 'package:finance_tracker_frontend/screens/addWalletMoney.dart';
 import 'package:finance_tracker_frontend/screens/createBills.dart';
 import 'package:finance_tracker_frontend/screens/transIncomeDetail.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
@@ -6,9 +10,66 @@ import 'package:finance_tracker_frontend/widgets/billTile.dart';
 import 'package:finance_tracker_frontend/widgets/customWalletButton.dart';
 import 'package:finance_tracker_frontend/widgets/transactionTile.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Wallet extends StatelessWidget {
+class Wallet extends StatefulWidget {
   const Wallet({super.key});
+
+  @override
+  State<Wallet> createState() => _WalletState();
+}
+
+class _WalletState extends State<Wallet> {
+  Map resData = {};
+  List billList = [];
+  Future<void> getBills() async {
+    final uri = "http://192.168.1.4:4000/api/bills/get";
+    final url = Uri.parse(uri);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not authenticated')),
+      );
+      return;
+    }
+    final response = await http.post(url, headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json"
+    });
+
+    resData = jsonDecode(response.body);
+    print(response.statusCode);
+    billList = resData["bill"];
+    log(resData.toString());
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      setState(() {
+        
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text(resData["message"] ?? 'All bills retrived successfully!'),
+        ),
+      );
+    } else {
+      resData = jsonDecode(response.body);
+      log(resData.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(resData["message"] ?? 'Failed to load bills'),
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getBills();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +104,7 @@ class Wallet extends StatelessWidget {
               //margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color:  Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -53,7 +114,7 @@ class Wallet extends StatelessWidget {
                   ),
                 ],
               ),
-              child:   Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const CustomText(
@@ -70,48 +131,87 @@ class Wallet extends StatelessWidget {
                     color: Colors.black,
                   ),
                   SizedBox(height: 20),
-                SizedBox(width: 290,
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      CustomWalletButton(text: "Add Money", icon: Icons.add,radius: 15,iconSize: 30,ontap: (){},),
-                      CustomWalletButton(text: "Create Bills", icon: Icons.receipt_long_rounded,radius: 15,ontap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (_)=>const CreateBills()));
-                      },iconSize: 30,),
-                    //  CustomWalletButton(text: "Send", icon: Icons.send,radius: 15,ontap: (){},iconSize: 30,),
-                  
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20,),
-                const CustomText(
-                    text: " Upcoming Bills :",
-                    fontWeight: FontWeight.w500,
-                    size: 20),
-                SizedBox(
-                  height: 10,
-                ),
-                // ✅ Wrap ListView.builder in Expanded
-                SizedBox(
-                  height: 550, // Set a fixed height for the ListView
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true, 
-                    child: ListView.builder(
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return  BillTile(icon: Icons.login, iconColor: Colors.black, name: "Youtube", date: "8 July,2025", onPay: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (_)=>AddTransaction()));
-                        },);
-                      },
+                  SizedBox(
+                    width: 290,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        CustomWalletButton(
+                          text: "Add Money",
+                          icon: Icons.add,
+                          radius: 15,
+                          iconSize: 30,
+                          ontap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const AddTransaction()));
+                          },
+                        ),
+                        CustomWalletButton(
+                          text: "Create Bills",
+                          icon: Icons.receipt_long_rounded,
+                          radius: 15,
+                          ontap: ()async {
+                           await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const CreateBills()));
+                             getBills();
+                          },
+                          iconSize: 30,
+                        ),
+                        //  CustomWalletButton(text: "Send", icon: Icons.send,radius: 15,ontap: (){},iconSize: 30,),
+                      ],
                     ),
                   ),
-                ),
-            ],
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const CustomText(
+                      text: " Upcoming Bills :",
+                      fontWeight: FontWeight.w500,
+                      size: 20),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  // ✅ Wrap ListView.builder in Expanded
+                  SizedBox(
+                    height: 550, // Set a fixed height for the ListView
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: ListView.builder(
+                        itemCount: billList.length,
+                        itemBuilder: (context, index) {
+                          final Map bill = billList[index];
+                          final String billName = bill["category"];
+                          final String billDate = bill["date"];
+                          // final double amount = bill["amount"];
+
+                          return BillTile(
+                            icon: Icons.receipt_long_outlined,
+                            iconColor: Colors.blue,
+                            name: billName,
+                            date: billDate,
+                            amount: (bill["amount"] as num).toDouble(),
+                            onPay: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => AddTransaction()));
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 }

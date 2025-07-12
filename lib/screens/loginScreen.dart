@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String tokens = "";
   Map resData = {};
   Future<void> login() async {
-    const String uri = "http://192.168.1.5:4000/api/users/login";
+    const String uri = "http://192.168.1.4:4000/api/users/login";
     final url = Uri.parse(uri);
     if (emailController.text.isEmpty || passController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,27 +39,29 @@ class _LoginScreenState extends State<LoginScreen> {
           "email": emailController.text,
           "password": passController.text,
         }));
+    resData = jsonDecode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      resData = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(resData["message"] ?? 'Login successful!'),
+          duration: Duration(seconds: 1)
         ),
       );
       try {
-      tokens = resData["Token"];
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', tokens);
-      log(tokens);
+        tokens = resData["Token"];
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', tokens);
+        log(tokens);
       } catch (e) {
-        log( "Error saving token: $e");
+        log("Error saving token: $e");
       }
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const BottomBar()));
       log(response.body);
     } else {
+      log(resData["message"]);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(resData["message"] ?? 'Login failed!❌ ❌ ')),
+        SnackBar(content: Text(resData["message"] ?? 'Login failed!❌ ❌ '),duration: Duration(seconds: 1),),
       );
     }
   }

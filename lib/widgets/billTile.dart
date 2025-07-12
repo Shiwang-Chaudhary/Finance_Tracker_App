@@ -4,6 +4,7 @@ class BillTile extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String name;
+  final double amount;
   final String date;
   final VoidCallback onPay;
 
@@ -14,6 +15,7 @@ class BillTile extends StatelessWidget {
     required this.name,
     required this.date,
     required this.onPay,
+    required this.amount
   });
 
   @override
@@ -48,8 +50,11 @@ class BillTile extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
+                Text("₹ ${amount.toString()}",
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
                 Text(date,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+
               ],
             ),
           ),

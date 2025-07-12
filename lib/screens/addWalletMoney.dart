@@ -1,80 +1,24 @@
-import 'dart:developer';
-
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
-import 'package:finance_tracker_frontend/widgets/typeDropDown.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key});
+
+
+
+
+
+///////NOT NEED YET and IS NOT USED ANYWHERE.
+
+class AddWallet extends StatefulWidget {
+  const AddWallet({super.key});
 
   @override
-  State<AddTransaction> createState() => _AddTransactionState();
+  State<AddWallet> createState() => _AddWalletState();
 }
-
-class _AddTransactionState extends State<AddTransaction> {
-  TextEditingController categoryController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
-  TextEditingController noteController = TextEditingController();
-  String transactionType = "";
-  Map resData = {};
-
-  Future<void> addTransaction() async {
-    const String uri = "http://192.168.1.4:4000/api/transactions/add";
-    final url = Uri.parse(uri);
-    if (categoryController.text.isEmpty || amountController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
-      return;
-    }
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
-    if (token == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not authenticated')),
-      );
-      return;
-    }
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: json.encode({
-          "category": categoryController.text,
-          "amount": double.parse(amountController.text),
-          "type" : transactionType,
-          "date": DateTime.now().toIso8601String(),
-          "note": noteController.text,
-        }));
-        log(transactionType);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-       resData = jsonDecode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(resData["message"] ?? 'Transaction added successfully!'),
-        ),
-      );
-      Navigator.pop(context); 
-      // Optionally, clear the fields after successful submission
-      // categoryController.clear();
-      // amountController.clear();
-      // noteController.clear();
-    } else {
-      final resData = jsonDecode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(resData["message"] ?? 'Failed to add transaction'),
-        ),
-      );
-  }
-  }
-  
+class _AddWalletState extends State<AddWallet> {
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +27,7 @@ class _AddTransactionState extends State<AddTransaction> {
         backgroundColor: Colors.transparent, // 🔹 Makes AppBar see-through
         elevation: 0, // 🔹 Removes shadow
         title: const Text(
-          'Add transaction',
+          'Add oney',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w600, fontSize: 26),
         ),
@@ -122,19 +66,6 @@ class _AddTransactionState extends State<AddTransaction> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText(
-                    text: "CATEGORY NAME (Ex. Netflix)",
-                    fontWeight: FontWeight.w500,
-                    size: 17,
-                    color: Color.fromARGB(255, 106, 106, 106),
-                  ),
-                  const SizedBox(height: 5),
-                  CustomTextField(
-                    controller: categoryController,
-                    hintText: "Category",
-                    showSymbol: false,
-                    numberType: false,
-                  ),
                   const SizedBox(height: 17),
                   const CustomText(
                     text: "AMOUNT",
@@ -150,22 +81,8 @@ class _AddTransactionState extends State<AddTransaction> {
                     numberType: true,
                   ),
                   const SizedBox(height: 17),
-                  const CustomText(
-                    text: "TYPE",
-                    fontWeight: FontWeight.w500,
-                    size: 17,
-                    color: Color.fromARGB(255, 106, 106, 106),
-                  ),
-                  const SizedBox(height: 10),
-                   TypeDropDown(
-                    monthEnable: false,
-                    text: "Select Transaction Type",
-                    onChanged: (value){
-                      setState(() {
-                        transactionType = value;
-                      });
-                    },
-                  ),
+                  
+                  
                   const SizedBox(
                     height: 20,
                   ),
@@ -190,7 +107,7 @@ class _AddTransactionState extends State<AddTransaction> {
             ),
           ),
           Positioned(
-              top: 720,
+              top: 570,
               left: 40,
               right: 40,
               child: CustomButton(
@@ -200,10 +117,10 @@ class _AddTransactionState extends State<AddTransaction> {
                   height: 55,
                   onTap: () async{
                     await Future.delayed(const Duration(seconds: 1));
-                    await addTransaction();
+                   // await addTransaction();
                   }))
         ],
       ),
-    );
+    );;
   }
 }
