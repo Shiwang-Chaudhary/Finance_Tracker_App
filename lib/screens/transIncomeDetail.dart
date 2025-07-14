@@ -1,17 +1,38 @@
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
-import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:readmore/readmore.dart';
 
-class TransIncomeDetail extends StatelessWidget {
-  const TransIncomeDetail({super.key});
+class TransIncomeDetail extends StatefulWidget {
+  final String category;
+  final String transType;
+  final String date;
+  final double amount;
+  final Color amountColor;
+  final String note;
 
+  const TransIncomeDetail({
+    super.key,
+    required this.amount,
+    required this.category,
+    required this.date,
+    required this.transType,
+    required this.amountColor,
+    required this.note,
+  });
+
+  @override
+  State<TransIncomeDetail> createState() => _TransIncomeDetailState();
+}
+
+class _TransIncomeDetailState extends State<TransIncomeDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // 🔹 Allows body to go behind AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // 🔹 Makes AppBar see-through
-        elevation: 0, // 🔹 Removes shadow
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text(
           'Transaction details',
           style: TextStyle(
@@ -21,7 +42,7 @@ class TransIncomeDetail extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background Image
+          // 🔹 Background image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -31,80 +52,146 @@ class TransIncomeDetail extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: 140, // 🔹 Control how far from top it should float
-            left: -19,
-            right: -19,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6), // shadow direction
-                  ),
-                ],
-              ),
-              child:  Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
+
+          // 🔹 Scrollable content with white card
+          SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(top: 120, left: 16, right: 16, bottom: 40),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(child: CustomText(text: "Upwork", fontWeight: FontWeight.bold, size: 30)),
-                    Center(child: CustomText(text: "(Income)", fontWeight: FontWeight.w400, size: 22,color: Colors.green,)),
-                    SizedBox(height: 20,),
-                    CustomText(text: "Transaction Details :", fontWeight: FontWeight.w600, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                    SizedBox(height: 20,),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Center(
+                        child: CustomText(
+                            text: widget.category,
+                            fontWeight: FontWeight.bold,
+                            size: 30)),
+                    Center(
+                        child: CustomText(
+                            text: "(${widget.transType})",
+                            fontWeight: FontWeight.w400,
+                            size: 22,
+                            color: widget.amountColor)),
+                    const SizedBox(height: 20),
+                    const CustomText(
+                        text: "Transaction Details :",
+                        fontWeight: FontWeight.w600,
+                        size: 20,
+                        color: Color.fromARGB(255, 108, 107, 107)),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      CustomText(text: "Status", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "Income", fontWeight: FontWeight.w500, size: 17,color: Colors.green,),
-
-                    ],),
-                    SizedBox(height: 20,),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const CustomText(
+                            text: "Status",
+                            fontWeight: FontWeight.w400,
+                            size: 20,
+                            color: Color.fromARGB(255, 108, 107, 107)),
+                        CustomText(
+                            text: widget.transType,
+                            fontWeight: FontWeight.w500,
+                            size: 17,
+                            color: widget.amountColor),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      CustomText(text: "From", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "Upwork", fontWeight: FontWeight.w500, size: 17,color: Colors.black,),
-
-                    ],),
-                    SizedBox(height: 20,),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const CustomText(
+                            text: "From",
+                            fontWeight: FontWeight.w400,
+                            size: 20,
+                            color: Color.fromARGB(255, 108, 107, 107)),
+                        CustomText(
+                            text: widget.category,
+                            fontWeight: FontWeight.w500,
+                            size: 17,
+                            color: Colors.black),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      CustomText(text: "Date", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "20th dec, 2025", fontWeight: FontWeight.w500, size: 17,color: Colors.black,),
-
-                    ],),
-                    SizedBox(height: 10,),
-                    Divider(),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const CustomText(
+                            text: "Date",
+                            fontWeight: FontWeight.w400,
+                            size: 20,
+                            color: Color.fromARGB(255, 108, 107, 107)),
+                        CustomText(
+                            text: widget.date,
+                            fontWeight: FontWeight.w500,
+                            size: 17,
+                            color: Colors.black),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    Row(
                       children: [
-                      CustomText(text: "Earning", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "Rs. 850", fontWeight: FontWeight.w500, size: 17,color: Colors.green,),
-
-                    ],),
-                    SizedBox(height: 20,),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const CustomText(
+                            text: "Note : ",
+                            fontWeight: FontWeight.w400,
+                            size: 20,
+                            color: Color.fromARGB(255, 108, 107, 107)),
+                   // const SizedBox(: 10),
+                     Expanded(
+                       child: ReadMoreText(
+                        widget.note,
+                        trimLines: 2,
+                        colorClickableText: Colors.blue,
+                        trimMode: TrimMode.Line,
+                        trimCollapsedText: 'Read More',
+                        trimExpandedText: 'Read Less',
+                        style: const TextStyle(fontSize: 19),
+                        moreStyle: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.blue),
+                        lessStyle: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.blue),
+                                           ),
+                     ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      CustomText(text: "Total", fontWeight: FontWeight.w400, size: 20,color: Color.fromARGB(255, 108, 107, 107),),
-                      CustomText(text: "Rs. 850", fontWeight: FontWeight.w500, size: 17,color: Colors.green,),
-
-                    ],),
-                    
-                    SizedBox(height: 20,),
-                    Center(child: CustomButton(buttonName: "Edit", color: Colors.blue, width: 80, height: 55, onTap: (){})),
-
-
+                        const CustomText(
+                            text: "Total",
+                            fontWeight: FontWeight.w400,
+                            size: 20,
+                            color: Color.fromARGB(255, 108, 107, 107)),
+                        CustomText(
+                            text: "₹ ${(widget.amount).toString()}",
+                            fontWeight: FontWeight.w500,
+                            size: 17,
+                            color: widget.amountColor),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-          
         ],
       ),
     );

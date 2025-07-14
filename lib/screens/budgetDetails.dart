@@ -1,13 +1,95 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'package:finance_tracker_frontend/screens/global.dart' as global;
 import 'package:finance_tracker_frontend/screens/wallet.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:finance_tracker_frontend/widgets/typeDropDown.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class BudgetDetails extends StatelessWidget {
+class BudgetDetails extends StatefulWidget {
+  //  final double amount;
+  //  final String note;
+
   const BudgetDetails({super.key});
 
+  @override
+  State<BudgetDetails> createState() => _BudgetDetailsState();
+}
+
+class _BudgetDetailsState extends State<BudgetDetails> {
+  bool isloading = true;
+  //Map resData = {};
+  String selectedMonth = "";
+  double percent = 0.0;
+  double remainingMoney = 0.0;
+  Map budget = {};
+  Future<void> getBudget()async{
+    final uri = "http://192.168.1.4:4000/api/budgets/get";
+    final url = Uri.parse(uri);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString("token");
+    if (token == null) {
+       ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated')),
+        );
+        return;
+    }
+    final response = await http.post(url,
+    headers: {
+      "Authorization" : "Bearer $token",
+      "Content-Type" : "application/json"
+    },body: jsonEncode({"month" : selectedMonth})
+    );
+    final resData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final budgetList = resData["budget"];
+      log("resData : $resData");
+      log("budgetList : $budgetList");
+      budget = budgetList[0];
+      log("budget : $budget");
+    budgetPercentUsed();
+    isloading = false;
+      setState(() {
+        
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text("Budget for ${budget["month"]}"??"Bugdet retrived successfully"))
+      );
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text(resData["message"]??"Can't get budget for ${budget["month"]}"))
+      );
+    }
+  }
+  void budgetPercentUsed(){
+   double a = (global.spent/budget["amount"])*100;
+   print("spent : ${global.spent}");
+   print("budgetAmount : ${budget["amount"]}");
+   log(a.toString());
+    if (a>100) {
+       a = 100;
+       a.toStringAsFixed(1);
+    }
+     percent = double.parse(a.toStringAsFixed(1));
+    double b = budget["amount"] - global.spent;
+    if (b<0) {
+      b = 100;
+    }
+     remainingMoney = b;
+    setState(() {
+      
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //getBudget();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,26 +142,26 @@ class BudgetDetails extends StatelessWidget {
                   children: [
                     // 🔸 Circular Budget Stack
                     const SizedBox(height: 10),
-                    const SizedBox(
+                     SizedBox(
                       height: 250,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 200,
                             height: 200,
                             child: CircularProgressIndicator(
-                              value: 0.25,
+                              value: 0.0,
                               strokeWidth: 15,
                               backgroundColor:
                                   Color.fromARGB(255, 143, 204, 254),
                             ),
                           ),
-                          SizedBox(
+                           SizedBox(
                             width: 200,
                             height: 200,
                             child: CircularProgressIndicator(
-                              value: 0.75,
+                              value: percent/100,
                               strokeWidth: 15,
                               color: Colors.blue,
                             ),
@@ -88,17 +170,17 @@ class BudgetDetails extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               CustomText(
-                                text: "75%",
+                                text: "$percent%",
                                 fontWeight: FontWeight.bold,
                                 size: 40,
-                                color: Color.fromARGB(255, 255, 106, 95),
+                                color:percent>50?Color.fromARGB(255, 255, 106, 95):Colors.green,
                               ),
-                              SizedBox(height: 8),
-                              CustomText(
+                              const SizedBox(height: 8),
+                               CustomText(
                                 text: "Budget used",
                                 fontWeight: FontWeight.bold,
                                 size: 22,
-                                color: Color.fromARGB(255, 255, 106, 95),
+                                color:percent>50?Color.fromARGB(255, 255, 106, 95):Colors.green,
                               ),
                             ],
                           ),
@@ -125,7 +207,17 @@ class BudgetDetails extends StatelessWidget {
                           size: 20,
                         ),
                         SizedBox(width: 110),
-                        CustomButton(fontsize: 14,buttonName: "+ Budget", color: Colors.blue, width: 70, height: 30, onTap: (){Navigator.push(context, MaterialPageRoute(builder: (_)=>Wallet()));},),
+                        // CustomButton(
+                        //   fontsize: 14,
+                        //   buttonName: "ALL Budgets",
+                        //   color: Colors.blue,
+                        //   width: 70,
+                        //   height: 30,
+                        //   onTap: () {
+                        //     Navigator.push(context,
+                        //         MaterialPageRoute(builder: (_) => Wallet()));
+                        //   },
+                        // ),
                       ],
                     ),
 
@@ -150,31 +242,42 @@ class BudgetDetails extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 20),
-                    TypeDropDown(monthEnable: true, text: "Select Month",onChanged: (){},),
+                    TypeDropDown(
+                      monthEnable: true,
+                      text: "Select Month",
+                      onChanged: (value)async {
+                          selectedMonth = value;
+                          setState(() {
+                            
+                          });
+                         await getBudget();
+                      },
+                    ),
                     const SizedBox(height: 20),
                     // 🔸 Budget + Edit
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CustomText(
-                          text: "Total Budget (January)",
+                         CustomText(
+                          text: "Total Budget (${isloading?"None":(budget["month"])})",
                           fontWeight: FontWeight.w500,
-                          size: 20,
+                          size: 19,
                           color: Colors.blue,
                         ),
-                        CustomButton(
-                          buttonName: "Edit",
-                          fontsize: 17,
-                          color: Colors.blue,
-                          width: 60,
-                          height: 30,
-                          onTap: () {},
-                        ),
+                        // CustomButton(
+                        //   buttonName: "Edit your Budget",
+                        //   fontsize: 17,
+                        //   color: Colors.blue,
+                        //   width: 100,
+                        //   height: 30,
+                        //   onTap: () {},
+                        // ),
+                        TextButton(onPressed: (){}, child:CustomText(text: "(Edit Budget)", fontWeight: FontWeight.w800, size: 21,color: Colors.blue,) )
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const CustomText(
-                      text: "₹ 12,500.00",
+                     CustomText(
+                      text: "₹ ${isloading?"None":budget["amount"]}",
                       fontWeight: FontWeight.bold,
                       size: 30,
                       color: Colors.blue,
@@ -201,17 +304,17 @@ class BudgetDetails extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    const Row(
+                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
-                          text: "₹ 9000.00",
+                          text: "₹ ${isloading?"None":global.spent}",  //from global
                           fontWeight: FontWeight.w500,
                           size: 25,
                           color: Color.fromARGB(255, 250, 105, 105),
                         ),
                         CustomText(
-                          text: "₹ 2500.00",
+                          text: "₹ ${isloading?"None":remainingMoney}",
                           fontWeight: FontWeight.w500,
                           size: 25,
                           color: Color.fromARGB(255, 100, 209, 104),
@@ -225,8 +328,8 @@ class BudgetDetails extends StatelessWidget {
                         text: "Note:", fontWeight: FontWeight.w500, size: 20),
                     const SizedBox(height: 20),
 
-                    const ReadMoreText(
-                      'Creating a budget helps track income and expenses effectively.It allows individuals to prioritize savings and avoid unnecessary spending.By setting monthly limits, budgeting builds financial discipline and awareness.Over time, it can reveal spending patterns and areas for improvement.A well-planned budget acts as a roadmap toward financial goals and stability.',
+                     ReadMoreText(
+                     isloading? "Please select the month":budget["note"],
                       trimLines: 2,
                       colorClickableText: Colors.blue,
                       trimMode: TrimMode.Line,

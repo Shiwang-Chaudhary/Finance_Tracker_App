@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:finance_tracker_frontend/screens/addBudgets.dart';
 import 'package:finance_tracker_frontend/screens/addTransaction.dart';
+import 'package:finance_tracker_frontend/screens/global.dart' as global;
 import 'package:finance_tracker_frontend/screens/transIncomeDetail.dart';
 import 'package:finance_tracker_frontend/screens/wallet.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
@@ -23,6 +24,10 @@ class _TransactionsState extends State<Transactions> {
   Map resData = {};
   bool isloading = true;
   bool income = false;
+  double totalSum = 0.0;
+  double totalIncome = 0.0;
+  double totalExpense = 0.0;
+
   Future<void> getTransaction() async {
     try {
       const String uri = "http://192.168.1.4:4000/api/transactions/get";
@@ -35,6 +40,7 @@ class _TransactionsState extends State<Transactions> {
         );
         return;
       }
+
       log(token);
       final response = await http.post(
         url,
@@ -45,44 +51,57 @@ class _TransactionsState extends State<Transactions> {
       );
 
       resData = jsonDecode(response.body);
-      log(resData.toString());
       transList = resData["transaction"];
+      totalBalance();
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                resData["message"] ?? 'Transaction retrived successfully!'),
+              resData["message"] ?? 'Transactions retrieved successfully!',
+            ),
           ),
         );
-
-        isloading = false;
-        setState(() {});
       } else {
-        final resData = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(resData["message"] ?? 'Failed to retrieve transactions'),
+            content: Text(
+              resData["message"] ?? 'Failed to retrieve transactions',
+            ),
           ),
         );
-        isloading = false;
-        setState(() {});
       }
+
+      setState(() {
+        isloading = false;
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error fetching transactions: $e')),
       );
-      isloading = false;
-      setState(() {});
-      return;
+      setState(() {
+        isloading = false;
+      });
     }
   }
-  Future <void> addWallet()async{
-    
+
+  void totalBalance() {
+    totalIncome = 0.0;
+    totalExpense = 0.0;
+    for (var transaction in transList) {
+      if (transaction["type"] == "income") {
+        totalIncome += transaction["amount"];
+      } else if (transaction["type"] == "expense") {
+        totalExpense += transaction["amount"];
+      }
+    }
+      global.spent = totalExpense;
+    totalSum = totalIncome - totalExpense;
+    setState(() {});
   }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getTransaction();
   }
@@ -97,7 +116,8 @@ class _TransactionsState extends State<Transactions> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                    "https://imgs.search.brave.com/zBpotWQLBykUvnp_zyXFgHAXCW0UVDB-7a4_AK8maMI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2NmLzQy/LzJiL2NmNDIyYjI4/ZmNkN2VmNzdlYTc5/NWEzZGY2ZTkzZGI3/LmpwZw"),
+                  "https://imgs.search.brave.com/zBpotWQLBykUvnp_zyXFgHAXCW0UVDB-7a4_AK8maMI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2NmLzQy/LzJiL2NmNDIyYjI4/ZmNkN2VmNzdlYTc5/NWEzZGY2ZTkzZGI3/LmpwZw",
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -108,87 +128,107 @@ class _TransactionsState extends State<Transactions> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                        text: "Good morning 👋",
-                        fontWeight: FontWeight.w400,
-                        size: 20),
+                      text: "Good morning 👋",
+                      fontWeight: FontWeight.w400,
+                      size: 20,
+                    ),
                     CustomText(
-                        text: "Shiwang Chaudhary",
-                        fontWeight: FontWeight.w500,
-                        size: 25)
+                      text: "Shiwang Chaudhary",
+                      fontWeight: FontWeight.w500,
+                      size: 25,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 220),
                 const CustomText(
-                    text: "Transaction history :",
-                    fontWeight: FontWeight.w500,
-                    size: 20),
-                // ✅ Wrap ListView.builder in Expanded
-               transList.isEmpty 
-                    ? const Center(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 170,),
-                          CustomText(
-                                text: "No transactions found 😢",
-                                fontWeight: FontWeight.w500,
-                                size: 30,
-                                color: Colors.grey,
-                              ),
-                          SizedBox(height: 90,),
-                          CustomText(
-                                text: "Create your first transaction",
-                                fontWeight: FontWeight.w500,
-                                size: 20,
-                                color: Colors.black54,
-                              ),
+                  text: "Transaction history :",
+                  fontWeight: FontWeight.w500,
+                  size: 20,
+                ),
 
-                        ],
-                      ),
-                    )
-                    : isloading 
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : Expanded(
-                        child: ListView.builder(
-                          itemCount: transList.length,
-                          itemBuilder: (context, index) {
-                            final transtile = transList[index];
-                            final String date = transtile["date"];
-                            if (transtile["type"] == "income") {
-                              income = true;
-                            } else {
-                              income = false;
-                            }
-                            return TransactionTile(
-                              ontap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const TransIncomeDetail()));
+                // ✅ Final Section: Loading or Empty or List
+                Expanded(
+                  child: isloading
+                      ? const Center(child: CircularProgressIndicator())
+                      : transList.isEmpty
+                          ? const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.hourglass_empty,
+                                      size: 60, color: Colors.grey),
+                                  SizedBox(height: 16),
+                                  CustomText(
+                                    text: "No Transactions Found 😢",
+                                    fontWeight: FontWeight.w500,
+                                    size: 22,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 10),
+                                  CustomText(
+                                    text: "Create your first transaction",
+                                    fontWeight: FontWeight.w400,
+                                    size: 16,
+                                    color: Colors.black54,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: transList.length,
+                              itemBuilder: (context, index) {
+                                final transtile = transList[index];
+                                final String date = transtile["date"];
+                                income = transtile["type"] == "income";
+
+                                return TransactionTile(
+                                  ontap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => TransIncomeDetail(
+                                          amount:
+                                              (transtile["amount"] as num).toDouble(),
+                                          category: transtile["category"] ??
+                                              "Category Name",
+                                          date: date.split("T")[0],
+                                          transType: transtile["type"],
+                                          amountColor: transtile["type"] ==
+                                                  "income"
+                                              ? Colors.green
+                                              : Colors.red,
+                                          note: transtile["note"] != ""
+                                              ? transtile["note"]
+                                              : "No note added...",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icons.attach_money_outlined,
+                                  title:
+                                      transtile["category"] ?? "Category Name",
+                                  subtitle: date.split("T")[0],
+                                  amount:
+                                      (transtile["amount"] as num).toDouble(),
+                                  amountColor: transtile["type"] == "income"
+                                      ? Colors.green
+                                      : Colors.red,
+                                );
                               },
-                              icon: Icons.work,
-                              title: transtile["category"] ?? "Category Name",
-                              subtitle: date.split("T")[0],
-                              amount: (transtile["amount"] as num).toDouble(),
-                              amountColor: income ? Colors.green : Colors.red,
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                ),
               ],
             ),
           ),
+
+          // Floating Card with total balance
           Positioned(
-            top: 120, // 🔹 Control how far from top it should float
+            top: 120,
             left: 0,
             right: 0,
             child: Container(
@@ -201,7 +241,7 @@ class _TransactionsState extends State<Transactions> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 12,
-                    offset: const Offset(0, 6), // shadow direction
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -225,9 +265,11 @@ class _TransactionsState extends State<Transactions> {
                         height: 40,
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const AddBudget()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddBudget(),
+                            ),
+                          );
                         },
                       ),
                       CustomButton(
@@ -237,36 +279,40 @@ class _TransactionsState extends State<Transactions> {
                         width: 70,
                         height: 40,
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => Wallet()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => Wallet(totalSum: totalSum),
+                            ),
+                          );
                         },
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CustomText(
-                        text: "₹ 12,500.00",
+                        text: "₹ $totalSum",
                         fontWeight: FontWeight.bold,
                         size: 30,
                         color: Colors.white,
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "Income",
                         fontWeight: FontWeight.w500,
                         size: 20,
                         color: Color.fromARGB(255, 216, 251, 255),
                       ),
-                      CustomText(
-                        text: "Expanses",
+                      const CustomText(
+                        text: "Expenses",
                         fontWeight: FontWeight.w500,
                         size: 20,
                         color: Color.fromARGB(255, 216, 251, 255),
@@ -277,35 +323,38 @@ class _TransactionsState extends State<Transactions> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CustomText(
-                        text: "₹ 9,500.00",
+                        text: "₹ $totalIncome",
                         fontWeight: FontWeight.w500,
                         size: 20,
-                        color: Color.fromARGB(255, 126, 255, 130),
+                        color: const Color.fromARGB(255, 126, 255, 130),
                       ),
                       CustomText(
-                        text: "₹ 5,500.00",
+                        text: "₹ $totalExpense",
                         fontWeight: FontWeight.w500,
                         size: 20,
-                        color: Color.fromARGB(255, 250, 105, 105),
+                        color: const Color.fromARGB(255, 250, 105, 105),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
+
+      // Floating Action Button
       floatingActionButton: RawMaterialButton(
         onPressed: () async {
-         await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const AddTransaction()));
-              
-              await getTransaction();
-                
-             
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddTransaction(totalSum: totalSum),
+            ),
+          );
+          await getTransaction(); // 🔁 Refresh after add
         },
-        fillColor: Color.fromRGBO(0, 191, 255, 1),
+        fillColor: const Color.fromRGBO(0, 191, 255, 1),
         shape: const CircleBorder(),
         constraints: const BoxConstraints.tightFor(
           width: 70.0,
@@ -314,8 +363,7 @@ class _TransactionsState extends State<Transactions> {
         elevation: 6.0,
         child: const Icon(Icons.add, size: 38, color: Colors.white),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerFloat, // ✅ Center
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

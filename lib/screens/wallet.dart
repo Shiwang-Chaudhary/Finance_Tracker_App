@@ -14,7 +14,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Wallet extends StatefulWidget {
-  const Wallet({super.key});
+  final double? totalSum;
+  const Wallet({super.key,this.totalSum});
 
   @override
   State<Wallet> createState() => _WalletState();
@@ -145,7 +146,7 @@ class _WalletState extends State<Wallet> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => const AddTransaction()));
+                                    builder: (_) =>  AddTransaction(totalSum: widget.totalSum ??0.0,)));
                           },
                         ),
                         CustomWalletButton(
@@ -199,7 +200,7 @@ class _WalletState extends State<Wallet> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => AddTransaction()));
+                                      builder: (_) => AddTransaction(totalSum: widget.totalSum ?? 0.0,)));
                             },
                           );
                         },

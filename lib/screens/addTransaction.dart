@@ -10,7 +10,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key});
+  final double totalSum;
+  const AddTransaction({super.key, required this.totalSum});
 
   @override
   State<AddTransaction> createState() => _AddTransactionState();
@@ -48,33 +49,35 @@ class _AddTransactionState extends State<AddTransaction> {
         body: json.encode({
           "category": categoryController.text,
           "amount": double.parse(amountController.text),
-          "type" : transactionType,
+          "type": transactionType,
           "date": DateTime.now().toIso8601String(),
           "note": noteController.text,
         }));
-        log(transactionType);
+    log(transactionType);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
-       resData = jsonDecode(response.body);
+      resData = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(resData["message"] ?? 'Transaction added successfully!'),
+          content:
+              Text(resData["message"] ?? 'Transaction added successfully!'),
         ),
       );
-      Navigator.pop(context); 
+      Navigator.pop(context);
       // Optionally, clear the fields after successful submission
       // categoryController.clear();
       // amountController.clear();
       // noteController.clear();
     } else {
-      final resData = jsonDecode(response.body);
+      resData = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(resData["message"] ?? 'Failed to add transaction'),
         ),
       );
+    }
   }
-  }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,10 +160,10 @@ class _AddTransactionState extends State<AddTransaction> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 10),
-                   TypeDropDown(
+                  TypeDropDown(
                     monthEnable: false,
                     text: "Select Transaction Type",
-                    onChanged: (value){
+                    onChanged: (value) {
                       setState(() {
                         transactionType = value;
                       });
@@ -198,9 +201,20 @@ class _AddTransactionState extends State<AddTransaction> {
                   color: Colors.blue,
                   width: 80,
                   height: 55,
-                  onTap: () async{
+                  onTap: () async {
+                    log("Transaction Type : $transactionType");
+                    if (widget.totalSum == 0.0 &&
+                        transactionType == "expense") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              "Cannot do transaction because balance is low"),
+                        ),
+                      );
+                    }else{
                     await Future.delayed(const Duration(seconds: 1));
                     await addTransaction();
+                    }
                   }))
         ],
       ),

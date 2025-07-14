@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } catch (e) {
         log("Error saving token: $e");
       }
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const BottomBar()));
       log(response.body);
     } else {

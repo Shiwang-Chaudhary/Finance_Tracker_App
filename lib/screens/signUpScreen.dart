@@ -48,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       resData = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            duration: Duration(seconds: 30),
+            duration: Duration(seconds: 1),
             content: Text(
               resData["message"] ?? 'Account created successfully!',
             )),

@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
 import 'package:finance_tracker_frontend/widgets/typeDropDown.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddBudget extends StatefulWidget {
   const AddBudget({super.key});
@@ -15,6 +20,53 @@ class _AddBudgetState extends State<AddBudget> {
  // TextEditingController categoryController = TextEditingController();
   TextEditingController amountCont = TextEditingController();
   TextEditingController noteController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  String selectedMonth = "";
+
+  Future<void> addBudget()async{
+    final uri = "http://192.168.1.4:4000/api/budgets/add";
+    final url = Uri.parse(uri);
+    // if (amountCont.text.isEmpty||noteController.text.isEmpty||nameController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Please all the arguments first'),duration: Duration(seconds: 1),),
+    //     );
+    // }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated')),
+        );
+        return;
+      }
+    final response = await http.post(url,
+    headers: {
+      "Authorization" : "Bearer $token",
+      "Content-Type" : "application/json"
+    },
+    body: jsonEncode({
+      "budgetName" : nameController.text.trim(),
+      "amount" : amountCont.text.trim(),
+      "month" : selectedMonth,
+      "note" : noteController.text.trim()
+    }));
+    final resData = jsonDecode(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                resData["message"] ?? 'Transaction retrived successfully!'),
+          ),
+        );
+        Navigator.pop(context);
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(resData["message"] ?? 'Failed to add transaction'),
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +122,7 @@ class _AddBudgetState extends State<AddBudget> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 5),
-               CustomTextField(controller: amountCont, hintText: "Budget's name",showSymbol: false,numberType: false,),
+               CustomTextField(controller: nameController, hintText: "Budget's name",showSymbol: false,numberType: false,),
                          
                   const SizedBox(height: 17),
                   const CustomText(
@@ -89,7 +141,12 @@ class _AddBudgetState extends State<AddBudget> {
                     color: Color.fromARGB(255, 106, 106, 106),
                   ),
                   const SizedBox(height: 10),
-                  TypeDropDown(monthEnable: true, text: "Select Month",onChanged: (){},),
+                  TypeDropDown(monthEnable: true, text: "Select Month",onChanged: (value){
+                    selectedMonth = value;
+                    setState(() {
+                      
+                    });
+                  },),
                   SizedBox(height: 20,),
                     const CustomText(
                     text: "NOTE (optinal)",
@@ -108,7 +165,11 @@ class _AddBudgetState extends State<AddBudget> {
                top: 750, // 🔹 Control how far from top it should float
             left: 40,
             right: 40,
-              child: CustomButton(buttonName: "Submit", color: Colors.blue, width: 80, height: 55, onTap: (){}))
+              child: CustomButton(buttonName: "Submit", color: Colors.blue, width: 80, height: 55, onTap: ()async{
+                await addBudget();
+                log("addBudget hit");
+                
+              }))
 
           // Foreground Content
         ],

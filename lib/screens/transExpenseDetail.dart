@@ -2,9 +2,18 @@ import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 
-class TransExpanseDetail extends StatelessWidget {
+class TransExpanseDetail extends StatefulWidget {
   const TransExpanseDetail({super.key});
 
+  @override
+  State<TransExpanseDetail> createState() => _TransExpanseDetailState();
+}
+
+class _TransExpanseDetailState extends State<TransExpanseDetail> {
+
+  Future<void> getTransdetails()async{
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,8 +103,8 @@ class TransExpanseDetail extends StatelessWidget {
                       CustomText(text: "Rs. 850", fontWeight: FontWeight.w500, size: 17,color: Colors.black,),
 
                     ],),
-                    SizedBox(height: 40,),
-                    Center(child: CustomButton(buttonName: "Edit", color: Colors.blue, width: 80, height: 55, onTap: (){})),
+                    // SizedBox(height: 40,),
+                    // Center(child: CustomButton(buttonName: "Edit", color: Colors.blue, width: 80, height: 55, onTap: (){})),
 
 
                   ],
