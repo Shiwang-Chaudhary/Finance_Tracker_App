@@ -27,23 +27,23 @@ class _BudgetDetailsState extends State<BudgetDetails> {
   double percent = 0.0;
   double remainingMoney = 0.0;
   Map budget = {};
-  Future<void> getBudget()async{
+  Future<void> getBudget() async {
     final uri = "http://192.168.1.4:4000/api/budgets/get";
     final url = Uri.parse(uri);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");
     if (token == null) {
-       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User not authenticated')),
-        );
-        return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not authenticated')),
+      );
+      return;
     }
     final response = await http.post(url,
-    headers: {
-      "Authorization" : "Bearer $token",
-      "Content-Type" : "application/json"
-    },body: jsonEncode({"month" : selectedMonth})
-    );
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({"month": selectedMonth}));
     final resData = jsonDecode(response.body);
     if (response.statusCode == 200) {
       final budgetList = resData["budget"];
@@ -51,45 +51,44 @@ class _BudgetDetailsState extends State<BudgetDetails> {
       log("budgetList : $budgetList");
       budget = budgetList[0];
       log("budget : $budget");
-    budgetPercentUsed();
-    isloading = false;
-      setState(() {
-        
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text("Budget for ${budget["month"]}"??"Bugdet retrived successfully"))
-      );
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(resData["message"]??"Can't get budget for ${budget["month"]}"))
-      );
+      budgetPercentUsed();
+      isloading = false;
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Budget for ${budget["month"]}" ??
+              "Bugdet retrived successfully")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(resData["message"] ??
+              "Can't get budget for ${budget["month"]}")));
     }
   }
-  void budgetPercentUsed(){
-   double a = (global.spent/budget["amount"])*100;
-   print("spent : ${global.spent}");
-   print("budgetAmount : ${budget["amount"]}");
-   log(a.toString());
-    if (a>100) {
-       a = 100;
-       a.toStringAsFixed(1);
+  
+  void budgetPercentUsed() {
+    double a = (global.spent / budget["amount"]) * 100;
+    print("spent : ${global.spent}");
+    print("budgetAmount : ${budget["amount"]}");
+    log(a.toString());
+    if (a > 100) {
+      a = 100;
+      a.toStringAsFixed(1);
     }
-     percent = double.parse(a.toStringAsFixed(1));
+    percent = double.parse(a.toStringAsFixed(1));
     double b = budget["amount"] - global.spent;
-    if (b<0) {
+    if (b < 0) {
       b = 100;
     }
-     remainingMoney = b;
-    setState(() {
-      
-    });
+    remainingMoney = b;
+    setState(() {});
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     //getBudget();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +141,7 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                   children: [
                     // 🔸 Circular Budget Stack
                     const SizedBox(height: 10),
-                     SizedBox(
+                    SizedBox(
                       height: 250,
                       child: Stack(
                         alignment: Alignment.center,
@@ -157,11 +156,11 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                                   Color.fromARGB(255, 143, 204, 254),
                             ),
                           ),
-                           SizedBox(
+                          SizedBox(
                             width: 200,
                             height: 200,
                             child: CircularProgressIndicator(
-                              value: percent/100,
+                              value: percent / 100,
                               strokeWidth: 15,
                               color: Colors.blue,
                             ),
@@ -173,14 +172,18 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                                 text: "$percent%",
                                 fontWeight: FontWeight.bold,
                                 size: 40,
-                                color:percent>50?Color.fromARGB(255, 255, 106, 95):Colors.green,
+                                color: percent > 50
+                                    ? Color.fromARGB(255, 255, 106, 95)
+                                    : Colors.green,
                               ),
                               const SizedBox(height: 8),
-                               CustomText(
+                              CustomText(
                                 text: "Budget used",
                                 fontWeight: FontWeight.bold,
                                 size: 22,
-                                color:percent>50?Color.fromARGB(255, 255, 106, 95):Colors.green,
+                                color: percent > 50
+                                    ? Color.fromARGB(255, 255, 106, 95)
+                                    : Colors.green,
                               ),
                             ],
                           ),
@@ -244,13 +247,11 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                     const SizedBox(height: 20),
                     TypeDropDown(
                       monthEnable: true,
-                      text: "Select Month",
-                      onChanged: (value)async {
-                          selectedMonth = value;
-                          setState(() {
-                            
-                          });
-                         await getBudget();
+                      text: "Please select a month for budget details",
+                      onChanged: (value) async {
+                        selectedMonth = value;
+                        setState(() {});
+                        await getBudget();
                       },
                     ),
                     const SizedBox(height: 20),
@@ -258,8 +259,9 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                         CustomText(
-                          text: "Total Budget (${isloading?"None":(budget["month"])})",
+                        CustomText(
+                          text:
+                              "Total Budget (${isloading ? "None" : (budget["month"])})",
                           fontWeight: FontWeight.w500,
                           size: 19,
                           color: Colors.blue,
@@ -272,12 +274,19 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                         //   height: 30,
                         //   onTap: () {},
                         // ),
-                        TextButton(onPressed: (){}, child:CustomText(text: "(Edit Budget)", fontWeight: FontWeight.w800, size: 21,color: Colors.blue,) )
+                        TextButton(
+                            onPressed: () {},
+                            child: CustomText(
+                              text: "(Edit Budget)",
+                              fontWeight: FontWeight.w800,
+                              size: 21,
+                              color: Colors.blue,
+                            ))
                       ],
                     ),
                     const SizedBox(height: 10),
-                     CustomText(
-                      text: "₹ ${isloading?"None":budget["amount"]}",
+                    CustomText(
+                      text: "₹ ${isloading ? "None" : budget["amount"]}",
                       fontWeight: FontWeight.bold,
                       size: 30,
                       color: Colors.blue,
@@ -304,17 +313,18 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                       ],
                     ),
                     const SizedBox(height: 5),
-                     Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
-                          text: "₹ ${isloading?"None":global.spent}",  //from global
+                          text:
+                              "₹ ${isloading ? "None" : global.spent}", //from global
                           fontWeight: FontWeight.w500,
                           size: 25,
                           color: Color.fromARGB(255, 250, 105, 105),
                         ),
                         CustomText(
-                          text: "₹ ${isloading?"None":remainingMoney}",
+                          text: "₹ ${isloading ? "None" : remainingMoney}",
                           fontWeight: FontWeight.w500,
                           size: 25,
                           color: Color.fromARGB(255, 100, 209, 104),
@@ -328,8 +338,8 @@ class _BudgetDetailsState extends State<BudgetDetails> {
                         text: "Note:", fontWeight: FontWeight.w500, size: 20),
                     const SizedBox(height: 20),
 
-                     ReadMoreText(
-                     isloading? "Please select the month":budget["note"],
+                    ReadMoreText(
+                      isloading ? "Please select the month" : budget["note"],
                       trimLines: 2,
                       colorClickableText: Colors.blue,
                       trimMode: TrimMode.Line,

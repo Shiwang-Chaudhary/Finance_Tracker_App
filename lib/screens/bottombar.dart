@@ -1,6 +1,7 @@
 import 'package:finance_tracker_frontend/screens/addBudgets.dart';
 import 'package:finance_tracker_frontend/screens/allBudget.dart';
 import 'package:finance_tracker_frontend/screens/budgetDetails.dart';
+import 'package:finance_tracker_frontend/screens/profile.dart';
 import 'package:finance_tracker_frontend/screens/transaction.dart';
 import 'package:flutter/material.dart';
 
@@ -14,9 +15,9 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int selectedIndex = 0;
   List screens = [
-    const Transactions(),
+     const Transactions(),
      const BudgetDetails(),
-    // const ProfileScreen(),
+     const ProfileScreen(),
   ];
   void onItemTapped(int index) {
     setState(() {
