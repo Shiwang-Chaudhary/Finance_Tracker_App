@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:finance_tracker_frontend/screens/loginScreen.dart';
+import 'package:finance_tracker_frontend/screens/auth/loginScreen.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/dialog.dart';
 import 'package:flutter/cupertino.dart';

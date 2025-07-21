@@ -21,7 +21,7 @@ class _CreateBillsState extends State<CreateBills> {
   Map resData = {};
 
   Future<void> addBill()async{
-    const uri = "http://192.168.1.4:4000/api/bills/add";
+    const uri = "http://192.168.1.8:4000/api/bills/add";
     final url = Uri.parse(uri);
     if (categoryController.text.isEmpty || amountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

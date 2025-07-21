@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:finance_tracker_frontend/screens/loginScreen.dart';
+import 'package:finance_tracker_frontend/screens/auth/loginScreen.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
@@ -21,7 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Map resData = {};
 
   Future<void> createAccount() async {
-    const String uri = "http://192.168.1.4:4000/api/users/register";
+    const String uri = "http://192.168.1.6:4000/api/users/register";
     final url = Uri.parse(uri);
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||

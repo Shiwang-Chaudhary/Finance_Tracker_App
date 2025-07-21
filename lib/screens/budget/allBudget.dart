@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:finance_tracker_frontend/screens/budgetDetails.dart';
+import 'package:finance_tracker_frontend/screens/budget/budgetDetails.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/budgetTile.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class _AllBudgetState extends State<AllBudget> {
   Map resData = {};
 
   Future<void> getAllBudgets() async {
-    final uri = "http://192.168.1.4:4000/api/budgets/getall";
+    const uri = "http://192.168.1.8:4000/api/budgets/getall";
     final url = Uri.parse(uri);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");

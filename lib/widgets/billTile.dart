@@ -52,7 +52,7 @@ class BillTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text("₹ ${amount.toString()}",
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-                Text(date,
+                Text("Submit before : $date",
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
 
               ],

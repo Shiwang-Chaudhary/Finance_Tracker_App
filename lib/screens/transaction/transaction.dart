@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:finance_tracker_frontend/screens/addBudgets.dart';
-import 'package:finance_tracker_frontend/screens/addTransaction.dart';
+import 'package:finance_tracker_frontend/screens/budget/addBudgets.dart';
+import 'package:finance_tracker_frontend/screens/transaction/addTransaction.dart';
 import 'package:finance_tracker_frontend/screens/global.dart' as global;
-import 'package:finance_tracker_frontend/screens/transIncomeDetail.dart';
+import 'package:finance_tracker_frontend/screens/transaction/transIncomeDetail.dart';
 import 'package:finance_tracker_frontend/screens/wallet.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
@@ -27,13 +27,21 @@ class _TransactionsState extends State<Transactions> {
   double totalSum = 0.0;
   double totalIncome = 0.0;
   double totalExpense = 0.0;
-
+  String? username = "";
+  String? useremail= "";
+  String dayTime = "";
   Future<void> getTransaction() async {
     try {
-      const String uri = "http://192.168.1.4:4000/api/transactions/get";
+      String uri = "http://192.168.1.8:4000/api/transactions/get";
       final url = Uri.parse(uri);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? token = prefs.getString('token');
+      final String? name = prefs.getString('name');
+      final String? email = prefs.getString('email');
+      setState(() {
+        username = name;
+        useremail = email;
+      });
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User not authenticated')),
@@ -95,16 +103,44 @@ class _TransactionsState extends State<Transactions> {
         totalExpense += transaction["amount"];
       }
     }
+    setState(() {
       global.spent = totalExpense;
     totalSum = totalIncome - totalExpense;
-    setState(() {});
+    });
+  }
+  void timeOfDay(){
+    String a = "";
+    final DateTime now = DateTime.now();
+    final part = now.toString().split(" ");
+    final time = part[1].split(":");
+    final int hour  = int.parse(time[0]);
+    // log(now.toString());
+    // log(time.toString());
+    // log(hour.toString());
+    if (hour>=5 && hour<12) {
+       a = "Good Morning";
+    }else if(hour>=12 && hour<16){
+       a = "Good Afternoon";
+    }else if(hour>=16 && hour<21){
+       a = "Good Evening";
+    }else {
+       a = "Good Night";
+    }
+    log(a);
+    setState(() {
+    dayTime = a;
+    });
+
   }
 
   @override
   void initState() {
     super.initState();
     getTransaction();
+    timeOfDay();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,16 +165,17 @@ class _TransactionsState extends State<Transactions> {
             child: Column(
               children: [
                 const SizedBox(height: 30),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                 Column(
+                 // mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CustomText(
-                      text: "Good morning 👋",
+                      text: "${dayTime} 👋",
                       fontWeight: FontWeight.w400,
                       size: 20,
                     ),
                     CustomText(
-                      text: "Shiwang Chaudhary",
+                      text: username ?? "Sir",
                       fontWeight: FontWeight.w500,
                       size: 25,
                     ),

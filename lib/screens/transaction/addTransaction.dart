@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:finance_tracker_frontend/screens/global.dart';
 import 'package:finance_tracker_frontend/widgets/CustomText.dart';
 import 'package:finance_tracker_frontend/widgets/customButton.dart';
 import 'package:finance_tracker_frontend/widgets/customTextfield.dart';
@@ -24,8 +25,9 @@ class _AddTransactionState extends State<AddTransaction> {
   String transactionType = "";
   Map resData = {};
 
+
   Future<void> addTransaction() async {
-    const String uri = "http://192.168.1.4:4000/api/transactions/add";
+     String uri = "http://192.168.1.8:4000/api/transactions/add";
     final url = Uri.parse(uri);
     if (categoryController.text.isEmpty || amountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,7 +79,8 @@ class _AddTransactionState extends State<AddTransaction> {
       );
     }
   }
-
+ 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
